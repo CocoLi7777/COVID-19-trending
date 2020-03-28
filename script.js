@@ -1,96 +1,140 @@
 (function() {
-    var endpoint = 'https://coronavirus-tracker-api.herokuapp.com/v2/locations?source=jhu&country_code=AU&timelines=true';
-    var loader = document.getElementById('loading');
+  var endpoint =
+    'https://coronavirus-tracker-api.herokuapp.com/v2/locations?source=jhu&country_code=AU&timelines=true';
+  var loader = document.getElementById('loading');
 
-    async function callRemoteApi(endpoint) {
-        const response = await fetch(endpoint);
-        return await response.json();
-    }
+  async function callRemoteApi(endpoint) {
+    const response = await fetch(endpoint);
+    return await response.json();
+  }
 
-    async function init() {
-        var rawData = await callRemoteApi(endpoint);
-        console.log(rawData);
-        drawTotolPieChart(rawData.latest);
-        drawLineChartByStates(rawData.locations, 'totalCase', 'confirmed', 'Total infected')
-        drawLineChartByStates(rawData.locations, 'totalDeath', 'deaths', 'Total death')
-        // data for recovered is not correct
-        //drawLineChartByStates(rawData.locations, 'totalRecovered', 'recovered', 'Total recovered')
+  async function init() {
+    var rawData = await callRemoteApi(endpoint);
+    console.log(rawData.locations);
+    drawTotolPieChart(rawData.locations, 'latestUpdate', 'confirmed');
+    drawLineChartByStates(
+      rawData.locations,
+      'newCase',
+      'confirmed',
+      'New Case'
+    );
+    drawLineChartByStates(
+      rawData.locations,
+      'totalCase',
+      'confirmed',
+      'Total infected'
+    );
+    drawLineChartByStates(
+      rawData.locations,
+      'totalDeath',
+      'deaths',
+      'Total death'
+    );
+    // data for recovered is not correct
+    //drawLineChartByStates(rawData.locations, 'totalRecovered', 'recovered', 'Total recovered')
 
+    loader.style.display = 'none';
+  }
 
-        loader.style.display = 'none';
-    }
+  function mapStateData(stateData, key) {
+    var allDates = Object.keys(stateData.timelines[key].timeline);
+    var allDatesValues = Object.values(stateData.timelines[key].timeline);
+    var lastTenDays = allDates
+      .slice(allDates.length - 10, allDates.length - 1)
+      .map(value => {
+        return value.split('T')[0];
+      });
+    //var newCaseNum =
+    var lastTenDaysValues = allDatesValues.slice(
+      allDatesValues.length - 10,
+      allDatesValues.length - 1
+    );
+    var lastTenDaysNewCaseValues = lastTenDaysValues.map((item, index, arr) => {
+      if (index > arr.length - 1) {
+        return;
+      } else {
+        return arr[index + 1] - item;
+      }
+    });
+    console.log(lastTenDaysNewCaseValues);
 
-    function drawTotolPieChart(rawData) {
-        var ctx = document.getElementById('latestUpdate').getContext('2d');
-        var data = {
-            labels: Object.keys(rawData).map( value => {
-                return value.toUpperCase()
-            }),
-            datasets: [{
-                data: [rawData.confirmed, rawData.deaths, rawData.recovered],
-                backgroundColor: [ '#ffcd56', '#fe6384', '#37a2eb']
-            }]
+    return {
+      days: lastTenDays,
+      values: lastTenDaysValues,
+      newCaseNum: lastTenDaysNewCaseValues.slice(0, 7),
+      title: stateData.province,
+      num: stateData.latest[key],
+      confirm: stateData.latest[key]
+    };
+  }
+
+  function drawTotolPieChart(rawData, containerId, category) {
+    var ctx = document.getElementById(containerId).getContext('2d');
+    var formatedData = rawData.map(value => {
+      return mapStateData(value, category);
+    });
+    var data = {
+      labels: formatedData.map(state => {
+        return `${state.title}: ${state.num}`;
+      }),
+      datasets: [
+        {
+          data: formatedData.map(state => {
+            return state.confirm;
+          }),
+          backgroundColor: [
+            '#6c5ce7',
+            '#ffcd56',
+            '#e17055',
+            '#00b894',
+            '#d63031',
+            '#00cec9',
+            '#74b9ff',
+            '#e84393'
+          ]
         }
-        var options = {
-            title: {
-                display: true,
-                text: 'Latest update'
-            }
-        }
-        renderChart(ctx, 'doughnut', data ,options);
-    }
+      ]
+    };
+    var options = {
+      title: {
+        display: true,
+        text: 'Confirmed Number'
+      }
+    };
+    renderChart(ctx, 'doughnut', data, options);
+  }
 
-    function mapStateData(stateData, key) {
-        var allDates = Object.keys(stateData.timelines[key].timeline);
-        var allDatesValues =  Object.values(stateData.timelines[key].timeline);
-        var lastTenDays = allDates.slice(allDates.length-10, allDates.length -1).map( value => {
-            return value.split('T')[0]
-        });
-        var lastTenDaysValues = allDatesValues.slice(allDatesValues.length-10, allDatesValues.length -1);
-
+  function drawLineChartByStates(rawData, containerId, category, title) {
+    var ctx = document.getElementById(containerId).getContext('2d');
+    var formatedData = rawData.map(value => {
+      return mapStateData(value, category);
+    });
+    var data = {
+      labels: formatedData[0].days,
+      datasets: formatedData.map(state => {
         return {
-            days: lastTenDays,
-            values: lastTenDaysValues,
-            title: stateData.province
-        }
-    }
+          label: state.title,
+          fill: false,
+          data: state.values
+        };
+      })
+    };
+    var options = {
+      title: {
+        display: true,
+        text: title
+      }
+    };
+    renderChart(ctx, 'line', data, options);
+  }
 
-    function drawLineChartByStates(rawData, containerId, category, title) {
-        var ctx = document.getElementById(containerId).getContext('2d');
-        var formatedData = rawData.map( value => {
-            return mapStateData(value, category)
-        })
-        var data = {
-            labels: formatedData[0].days,
-            datasets: 
-            formatedData.map( state => {
-                return {
-                    label: state.title,
-                    fill: false,
-                    data: state.values
-                }
-            })
-        }
-        var options = {
-            title: {
-                display: true,
-                text: title
-            }
-        }
-        renderChart(ctx, 'line', data ,options);
-    }
+  init();
 
-    init();
-
-
-
-    function renderChart(ctx, type, data, options) {
-        var chart = new Chart(ctx, {
-            type: type,
-            type: type,
-            data: data,
-            options: options ? options: {}
-        });
-    }
+  function renderChart(ctx, type, data, options) {
+    var chart = new Chart(ctx, {
+      type: type,
+      data: data,
+      options: options ? options : {}
+    });
+  }
 })();
-
