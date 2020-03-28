@@ -11,7 +11,12 @@
         var rawData = await callRemoteApi(endpoint);
         console.log(rawData);
         drawTotolPieChart(rawData.latest);
-        drawTotalCaseByStates(rawData.locations);
+        drawLineChartByStates(rawData.locations, 'totalCase', 'confirmed', 'Total infected')
+        drawLineChartByStates(rawData.locations, 'totalDeath', 'deaths', 'Total death')
+        // data for recovered is not correct
+        //drawLineChartByStates(rawData.locations, 'totalRecovered', 'recovered', 'Total recovered')
+
+
         loader.style.display = 'none';
     }
 
@@ -35,21 +40,41 @@
         renderChart(ctx, 'doughnut', data ,options);
     }
 
-    function drawTotalCaseByStates(rawData) {
-        var ctx = document.getElementById('totalCase').getContext('2d');
+    function mapStateData(stateData, key) {
+        var allDates = Object.keys(stateData.timelines[key].timeline);
+        var allDatesValues =  Object.values(stateData.timelines[key].timeline);
+        var lastTenDays = allDates.slice(allDates.length-10, allDates.length -1).map( value => {
+            return value.split('T')[0]
+        });
+        var lastTenDaysValues = allDatesValues.slice(allDatesValues.length-10, allDatesValues.length -1);
+
+        return {
+            days: lastTenDays,
+            values: lastTenDaysValues,
+            title: stateData.province
+        }
+    }
+
+    function drawLineChartByStates(rawData, containerId, category, title) {
+        var ctx = document.getElementById(containerId).getContext('2d');
+        var formatedData = rawData.map( value => {
+            return mapStateData(value, category)
+        })
         var data = {
-            labels: Object.keys(rawData[0].timelines.confirmed.timeline).map( value => {
-                return value.split('T')
-            }),
-            datasets: [{
-                data: [rawData.confirmed, rawData.deaths, rawData.recovered],
-                backgroundColor: [ '#ffcd56', '#fe6384', '#37a2eb']
-            }]
+            labels: formatedData[0].days,
+            datasets: 
+            formatedData.map( state => {
+                return {
+                    label: state.title,
+                    fill: false,
+                    data: state.values
+                }
+            })
         }
         var options = {
             title: {
                 display: true,
-                text: 'Total case trending'
+                text: title
             }
         }
         renderChart(ctx, 'line', data ,options);
@@ -57,37 +82,7 @@
 
     init();
 
-    var ctx = document.getElementById('totalDeath').getContext('2d');
-    var totalDeath = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-            datasets: [{
-                label: '# of Votes',
-                data: [12, 19, 3, 5, 2, 3]
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-            }
-        }
-    });
 
-    var ctx = document.getElementById('dailyIncrease').getContext('2d');
-    var data = {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-        datasets: [{
-            label: '# of Votes',
-            data: [12, 19, 3, 5, 2, 3]
-        }]
-    };
-
-    renderChart(ctx, 'line', data, null)
 
     function renderChart(ctx, type, data, options) {
         var chart = new Chart(ctx, {
