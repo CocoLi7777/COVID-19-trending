@@ -1,6 +1,6 @@
 (function() {
   var endpoint =
-    'https://coronavirus-tracker-api.herokuapp.com/v2/locations?source=jhu&country_code=AU&timelines=true';
+    '/api/trending-service';
   var loader = document.getElementById('loading');
 
   async function callRemoteApi(endpoint) {
