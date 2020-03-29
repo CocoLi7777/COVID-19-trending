@@ -1,6 +1,10 @@
 .container {
   max-width: 1000px;
 }
+#timezone {
+  width: 500px;
+  height: 100px;
+}
 .loading {
   position: fixed;
   top: 0;

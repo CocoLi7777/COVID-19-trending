@@ -8,15 +8,27 @@
     return await response.json();
   }
 
+  var renderTimezone = () => {
+    setInterval(() => {
+      var timezone = moment().format('MMMM Do YYYY, h:mm:ss a');
+      document.getElementById('timezone').innerHTML = timezone;
+    }, 1000);
+  };
+  var setTimezone = () => {
+    clearInterval(renderTimezone);
+    renderTimezone();
+  };
+
   async function init() {
     var rawData = await callRemoteApi(endpoint);
     console.log(rawData.locations);
+    setTimezone();
     drawTotolPieChart(rawData.locations, 'latestUpdate', 'confirmed');
     drawLineChartByNewCase(
       rawData.locations,
       'newCase',
       'confirmed',
-      'New Case'
+      'New Cases'
     );
     drawLineChartByStates(
       rawData.locations,
@@ -123,7 +135,7 @@
     var options = {
       title: {
         display: true,
-        text: 'Confirmed Number'
+        text: 'Confirmed Cases'
       },
       legend: {
         position: 'left',
