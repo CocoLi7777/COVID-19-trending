@@ -80,24 +80,31 @@
     var allDates = Object.keys(stateData.timelines[key].timeline);
     var allDatesValues = Object.values(stateData.timelines[key].timeline);
     var lastTenDays = allDates
-      .slice(allDates.length - 10, allDates.length - 1)
+      .slice(allDates.length - 10, allDates.length)
       .map(value => {
         return value.split('T')[0];
       });
 
     var lastTenDaysValues = allDatesValues.slice(
       allDatesValues.length - 10,
-      allDatesValues.length - 1
+      allDatesValues.length
     );
-    var lastTenDaysNewCaseValues = lastTenDaysValues.map((item, index, arr) => {
-      return item - arr[index - 1];
-    });
-    //console.log(lastTenDaysNewCaseValues.slice(1, 8));
+    var lastElevenDaysValues = allDatesValues.slice(
+      allDatesValues.length - 11,
+      allDatesValues.length
+    );
+    var lastTenDaysNewCaseValues = lastElevenDaysValues.map(
+      (item, index, arr) => {
+        return item - arr[index - 1];
+      }
+    );
+    lastTenDaysNewCaseValues = lastTenDaysNewCaseValues.slice(1, 11);
+    console.log(lastTenDaysNewCaseValues);
 
     return {
       days: lastTenDays,
       values: lastTenDaysValues,
-      newCaseNum: lastTenDaysNewCaseValues.slice(1, 9),
+      newCaseNum: lastTenDaysNewCaseValues,
       title: mapState(stateData.province),
       num: stateData.latest[key],
       confirm: stateData.latest[key]
