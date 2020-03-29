@@ -1,5 +1,5 @@
 # COVID-19 Status data visualization in Australia
-The is another side project to help people visualize the current COVID-19 trending in Australia. This is a web application that consumes an API from the community and did some transformation to display the overall trending as well as the trending in each state. 
+This project is to help people visualize the current COVID-19 trending in Australia. This is a web application that consumes an API from the community and did some transformation to display the overall trending as well as the trending in each state. 
 ​
 ## Live Demo
 This application is deployed to Netlify, here is the [link](https://elegant-dijkstra-0d941a.netlify.com/)
