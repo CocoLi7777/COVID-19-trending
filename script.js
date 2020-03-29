@@ -91,6 +91,16 @@
       confirm: stateData.latest[key]
     };
   }
+  var palette = [
+    '#6c5ce7',
+    '#ffcd56',
+    '#e17055',
+    '#00b894',
+    '#d63031',
+    '#00cec9',
+    '#74b9ff',
+    '#e84393'
+  ];
 
   function drawTotolPieChart(rawData, containerId, category) {
     var ctx = document.getElementById(containerId).getContext('2d');
@@ -106,16 +116,7 @@
           data: formatedData.map(state => {
             return state.confirm;
           }),
-          backgroundColor: [
-            '#6c5ce7',
-            '#ffcd56',
-            '#e17055',
-            '#00b894',
-            '#d63031',
-            '#00cec9',
-            '#74b9ff',
-            '#e84393'
-          ]
+          backgroundColor: palette
         }
       ]
     };
@@ -139,25 +140,16 @@
     });
     var data = {
       labels: formatedData[0].days,
-      datasets: formatedData.map(state => {
+      datasets: formatedData.map((state, index) => {
         return {
           label: `${state.title}: ${
             state.newCaseNum[state.newCaseNum.length - 1]
           }`,
           fill: false,
+          borderColor: palette[index],
           data: state.newCaseNum
         };
-      }),
-      backgroundColor: [
-        '#6c5ce7',
-        '#ffcd56',
-        '#e17055',
-        '#00b894',
-        '#d63031',
-        '#00cec9',
-        '#74b9ff',
-        '#e84393'
-      ]
+      })
     };
     var options = {
       title: {
@@ -175,11 +167,12 @@
     });
     var data = {
       labels: formatedData[0].days,
-      datasets: formatedData.map(state => {
+      datasets: formatedData.map((state, index) => {
         return {
           label: state.title,
           fill: false,
-          data: state.values
+          data: state.values,
+          borderColor: palette[index]
         };
       })
     };
