@@ -1,6 +1,9 @@
 .container {
   max-width: 1000px;
 }
+#timezone {
+  margin-bottom: 30px;
+}
 
 .loading {
   position: fixed;
