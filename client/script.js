@@ -1,6 +1,5 @@
 (function() {
-  var endpoint =
-    '/api/trending-service';
+  var endpoint = '/api/trending-service';
   var loader = document.getElementById('loading');
 
   async function callRemoteApi(endpoint) {
@@ -126,6 +125,9 @@
     var formatedData = rawData.map(value => {
       return mapStateData(value, category);
     });
+    var totalConfirmed = formatedData.reduce((total, state) => {
+      return (total += state.num);
+    }, 0);
     var data = {
       labels: formatedData.map(state => {
         return `${state.title}: ${state.num}`;
@@ -142,7 +144,7 @@
     var options = {
       title: {
         display: true,
-        text: 'Confirmed Cases'
+        text: `Confirmed Cases: ${totalConfirmed}`
       },
       legend: {
         position: 'left',
