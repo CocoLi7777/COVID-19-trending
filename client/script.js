@@ -159,6 +159,9 @@
     var formatedData = rawData.map(value => {
       return mapStateData(value, category);
     });
+    var newCasesTotal = formatedData.reduce((total, state) => {
+      return (total += state.newCaseNum);
+    }, 0);
     var data = {
       labels: formatedData[0].days,
       datasets: formatedData.map((state, index) => {
@@ -175,7 +178,7 @@
     var options = {
       title: {
         display: true,
-        text: title
+        text: `${title}: ${newCasesTotal}`
       }
     };
     renderChart(ctx, 'line', data, options);
