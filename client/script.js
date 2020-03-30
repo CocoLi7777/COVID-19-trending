@@ -178,7 +178,7 @@
     var options = {
       title: {
         display: true,
-        text: `${title}: ${newCasesTotal}`
+        text: title
       }
     };
     renderChart(ctx, 'line', data, options);
