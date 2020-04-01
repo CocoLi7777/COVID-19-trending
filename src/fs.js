@@ -1,9 +1,4 @@
 var fs = require('fs');
-
-// var checkTime = fileName => {
-//   var stats = fs.statSync(fileName);
-//   return stats.mtime;
-// };
 var checkTime = fileName => {
   return new Promise((resolve, reject) => {
     fs.stat(fileName, (err, stats) => {

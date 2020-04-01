@@ -17,20 +17,15 @@ router.get('/api/trending-service', (req, res) => {
     .then(async response => {
       res.send(JSON.stringify(response.data));
       const lastModifyDate = await lastModifiedDate('localCache.json');
-      const lastModifyMonth = lastModifyDate.getMonth() + 1;
-      const lastModifyDay = lastModifyDate.getDate();
-      const currentDate = new Date().getDate();
-      const currentMonth = new Date().getMonth() + 1;
+      const currentDate = new Date();
       if (
-        lastModifyDate == 'undefined' ||
-        lastModifyMonth != currentMonth ||
-        lastModifyDay != currentDate
+        currentDate.toLocaleDateString('en-US') !=
+        lastModifyDate.toLocaleDateString('en-US')
       ) {
         writeToLocalCache(response.data, 'localCache.json');
       }
     })
     .catch(error => {
-      console.log(error);
       var callback = jsonData => {
         res.send(JSON.parse(jsonData));
       };
