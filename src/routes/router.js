@@ -3,6 +3,9 @@ const axios = require('axios');
 const router = express.Router();
 const { writeToLocalCache, readLoadCache, lastModifiedDate } = require('../fs');
 
+var MY_SLACK_WEBHOOK_URL = process.env.WEBHOOK;
+var slack = require('slack-notify')(MY_SLACK_WEBHOOK_URL);
+
 router.get('/api/trending-service', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   const endpoint = process.env.ENDPOINT;
@@ -26,6 +29,7 @@ router.get('/api/trending-service', (req, res) => {
       }
     })
     .catch(error => {
+      slack.alert(JSON.stringify(error));
       var callback = jsonData => {
         res.send(JSON.parse(jsonData));
       };
