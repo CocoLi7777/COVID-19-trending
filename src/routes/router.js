@@ -21,7 +21,11 @@ router.get('/api/trending-service', (req, res) => {
       const lastModifyDay = lastModifyDate.getDate();
       const currentDate = new Date().getDate();
       const currentMonth = new Date().getMonth() + 1;
-      if (lastModifyMonth != currentMonth || lastModifyDay != currentDate) {
+      if (
+        lastModifyDate == 'undefined' ||
+        lastModifyMonth != currentMonth ||
+        lastModifyDay != currentDate
+      ) {
         writeToLocalCache(response.data, 'localCache.json');
       }
     })
