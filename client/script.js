@@ -20,7 +20,6 @@
 
   async function init() {
     var rawData = await callRemoteApi(endpoint);
-    console.log(rawData.locations);
     setTimezone();
     drawTotolPieChart(rawData.locations, 'latestUpdate', 'confirmed');
     drawLineChartByNewCase(
@@ -98,8 +97,6 @@
       }
     );
     lastTenDaysNewCaseValues = lastTenDaysNewCaseValues.slice(1, 11);
-    console.log(lastTenDaysNewCaseValues);
-
     return {
       days: lastTenDays,
       values: lastTenDaysValues,
