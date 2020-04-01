@@ -5,11 +5,11 @@ var fs = require('fs');
 //   return stats.mtime;
 // };
 var checkTime = fileName => {
-  var resTime = null;
-  fs.stat(fileName, (err, stats) => {
-    console.log(stats.mtime);
+  return new Promise((resolve, reject) => {
+    fs.stat(fileName, (err, stats) => {
+      resolve(stats.mtime);
+    });
   });
-  return resTime;
 };
 exports.lastModifiedDate = checkTime;
 

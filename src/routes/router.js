@@ -14,12 +14,16 @@ router.get('/api/trending-service', (req, res) => {
       'Content-Type': 'application/json'
     }
   })
-    .then(response => {
+    .then(async response => {
       res.send(JSON.stringify(response.data));
-      const result = lastModifiedDate('localCache.json');
-      console.log(result);
-
-      writeToLocalCache(response.data, 'localCache.json');
+      const lastModifyDate = await lastModifiedDate('localCache.json');
+      const lastModifyMonth = lastModifyDate.getMonth() + 1;
+      const lastModifyDay = lastModifyDate.getDate();
+      const currentDate = new Date().getDate();
+      const currentMonth = new Date().getMonth() + 1;
+      if (lastModifyMonth != currentMonth || lastModifyDay != currentDate) {
+        writeToLocalCache(response.data, 'localCache.json');
+      }
     })
     .catch(error => {
       console.log(error);
