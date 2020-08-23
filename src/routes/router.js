@@ -14,10 +14,10 @@ router.get('/api/trending-service', (req, res) => {
     url: endpoint,
     headers: {
       Accept: 'application/json',
-      'Content-Type': 'application/json'
-    }
+      'Content-Type': 'application/json',
+    },
   })
-    .then(async response => {
+    .then(async (response) => {
       res.send(JSON.stringify(response.data));
       const lastModifyDate = await lastModifiedDate('localCache.json');
       const currentDate = new Date();
@@ -28,9 +28,9 @@ router.get('/api/trending-service', (req, res) => {
         writeToLocalCache(response.data, 'localCache.json');
       }
     })
-    .catch(error => {
+    .catch((error) => {
       slack.alert(JSON.stringify(error));
-      var callback = jsonData => {
+      var callback = (jsonData) => {
         res.send(JSON.parse(jsonData));
       };
       readLoadCache('localCache.json', callback);
